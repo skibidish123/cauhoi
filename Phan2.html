@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phần II — Nghị quyết 98/2023/QH15 | Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#8B1A2B;
+    --maroon-dark:#4A0E17;
+    --navy:#0F2E4C;
+    --gold:#D9A441;
+    --gold-light:#F0D9A6;
+    --cream:#FBF7F1;
+    --ink:#241315;
+    --muted:#8A7770;
+    --good:#2E6B4F;
+    --bad:#8B2E2E;
+    --line:#E7DCD2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(139,26,43,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(15,46,76,0.08), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    width:100%;
+    max-width:760px;
+    padding:2rem 1.5rem 4rem;
+    position:relative;
+    z-index:1;
+  }
+
+  .backlink{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.85rem; font-weight:600; color:var(--muted);
+    text-decoration:none; margin-bottom:1.4rem;
+  }
+  .backlink:hover{color:var(--maroon);}
+  .backlink svg{width:14px; height:14px;}
+
+  header{margin-bottom:2rem;}
+  .kicker{
+    display:flex; align-items:center; gap:.6rem;
+    font-size:.8rem; letter-spacing:.04em; color:var(--maroon); font-weight:600;
+    margin-bottom:.5rem;
+  }
+  .kicker .dash{width:22px; height:2px; background:var(--gold); display:inline-block;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(1.5rem, 3.8vw, 2.1rem);
+    line-height:1.2;
+    margin:0 0 .4rem;
+    color:var(--maroon-dark);
+  }
+  .sub{color:var(--muted); font-size:.96rem; max-width:56ch;}
+
+  .timeline{
+    display:flex; gap:4px; margin-top:1.6rem; flex-wrap:wrap;
+  }
+  .dot{
+    flex:1; min-width:8px; height:7px; border-radius:3px;
+    background:var(--line);
+    transition:background .3s ease;
+  }
+  .dot.current{background:var(--gold);}
+  .dot.correct{background:var(--good);}
+  .dot.wrong{background:var(--bad);}
+
+  .stage{position:relative;}
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:2.1rem 1.9rem;
+    box-shadow:0 18px 40px -22px rgba(74,14,23,0.35);
+  }
+  .qmeta{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:1rem;
+  }
+  .qnum{
+    font-family:'Fraunces',serif; font-weight:600; color:var(--gold);
+    font-size:1.05rem;
+  }
+  .qtotal{color:var(--muted); font-size:.85rem;}
+  .question{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    line-height:1.4;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 1.5rem;
+  }
+  .options{display:flex; flex-direction:column; gap:.65rem;}
+  .opt{
+    display:flex; align-items:center; gap:.85rem;
+    text-align:left;
+    border:1.5px solid var(--line);
+    background:#fffdfb;
+    border-radius:10px;
+    padding:.8rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:.96rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(.locked){border-color:var(--maroon); background:#FBF1EC;}
+  .opt .letter{
+    flex:0 0 auto;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--cream); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:.85rem; color:var(--maroon);
+  }
+  .opt.selected{border-color:var(--maroon); background:#FBF1EC;}
+  .opt.correct{border-color:var(--good); background:#EAF4EE;}
+  .opt.correct .letter{background:var(--good); color:#fff; border-color:var(--good);}
+  .opt.incorrect{border-color:var(--bad); background:#FBEDED;}
+  .opt.incorrect .letter{background:var(--bad); color:#fff; border-color:var(--bad);}
+  .opt.locked{cursor:default;}
+
+  .explain{
+    margin-top:1.3rem;
+    padding:1rem 1.1rem;
+    border-radius:10px;
+    background:var(--cream);
+    border-left:3px solid var(--gold);
+    font-size:.9rem;
+    line-height:1.55;
+    color:#4a3a35;
+    display:none;
+  }
+  .explain.show{display:block;}
+  .explain b{color:var(--maroon-dark);}
+
+  .controls{
+    display:flex; justify-content:flex-end; margin-top:1.6rem;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600; font-size:.92rem;
+    padding:.7rem 1.5rem;
+    border-radius:9px;
+    border:none;
+    background:var(--maroon-dark);
+    color:#fff;
+    cursor:pointer;
+    opacity:0; pointer-events:none;
+    transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease, background .15s ease;
+  }
+  .btn.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .btn:hover{background:var(--maroon);}
+
+  .result{
+    background:linear-gradient(160deg, var(--maroon-dark), var(--navy));
+    color:#fff;
+    border-radius:16px;
+    padding:3rem 2.2rem;
+    text-align:center;
+    display:none;
+  }
+  .result.show{display:block;}
+  .result .score{
+    font-family:'Fraunces',serif;
+    font-size:4.2rem; font-weight:700;
+    color:var(--gold);
+    line-height:1;
+    margin-bottom:.3rem;
+  }
+  .result .outof{color:#D8C3B0; font-size:1rem; margin-bottom:1.4rem;}
+  .result .verdict{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem; margin-bottom:.6rem;
+  }
+  .result p.desc{color:#E7D9CE; max-width:44ch; margin:0 auto 2rem; line-height:1.6; font-size:.95rem;}
+  .result .btnrow{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;}
+  .result .btn{background:var(--gold); color:var(--maroon-dark); opacity:1; pointer-events:auto; transform:none;}
+  .result .btn:hover{background:var(--gold-light);}
+  .result .btn.secondary{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.4);}
+  .result .btn.secondary:hover{background:rgba(255,255,255,0.1);}
+
+  .stage.hidden{display:none;}
+
+  footer{
+    margin-top:2.5rem;
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+    Quay lại trang chủ
+  </a>
+  <header>
+    <div class="kicker"><span class="dash"></span>PHẦN II — LUYỆN TẬP</div>
+    <h1>Sự kiện tiêu biểu: Nghị quyết 98/2023/QH15</h1>
+    <p class="sub">20 câu hỏi trắc nghiệm về nội dung, thẩm quyền đặc thù và kết quả bước đầu thực hiện Nghị quyết 98.</p>
+    <div class="timeline" id="timeline"></div>
+  </header>
+
+  <div class="stage" id="quizStage">
+    <div class="card">
+      <div class="qmeta">
+        <span class="qnum" id="qnum">Câu 1</span>
+        <span class="qtotal">/ 20</span>
+      </div>
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <div class="explain" id="explain"></div>
+      <div class="controls">
+        <button class="btn" id="nextBtn">Câu tiếp theo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage hidden" id="resultStage">
+    <div class="result" id="resultCard">
+      <div class="score" id="scoreNum">0/20</div>
+      <div class="outof" id="scorePct"></div>
+      <div class="verdict" id="verdict"></div>
+      <p class="desc" id="verdictDesc"></p>
+      <div class="btnrow">
+        <button class="btn" id="retryBtn">Làm lại</button>
+        <a class="btn secondary" href="main.html" style="text-decoration:none; display:inline-flex; align-items:center;">Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>Giáo dục địa phương · Lớp 12 · Chủ đề 1</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    "q": "Nghị quyết 98/2023/QH15 được cơ quan nào thông qua?",
+    "opts": [
+      "Chính phủ",
+      "Quốc hội khóa XV",
+      "Uỷ ban Thường vụ Quốc hội",
+      "Hội đồng nhân dân TP.HCM"
+    ],
+    "correct": 1,
+    "explain": "Nghị quyết 98/2023/QH15 được Quốc hội khóa XV thông qua."
+  },
+  {
+    "q": "Nghị quyết 98/2023/QH15 cho phép Thành phố Hồ Chí Minh làm gì?",
+    "opts": [
+      "Sáp nhập với các tỉnh lân cận",
+      "Thí điểm một số cơ chế, chính sách đặc thù để phát triển",
+      "Miễn hoàn toàn thuế cho doanh nghiệp",
+      "Tự tổ chức bầu cử riêng"
+    ],
+    "correct": 1,
+    "explain": "Nghị quyết cho phép TP.HCM thí điểm cơ chế, chính sách đặc thù để phát triển."
+  },
+  {
+    "q": "Nghị quyết 98/2023/QH15 gồm tổng cộng bao nhiêu cơ chế, chính sách đặc thù?",
+    "opts": [
+      "20",
+      "30",
+      "44",
+      "98"
+    ],
+    "correct": 2,
+    "explain": "Nghị quyết 98 gồm 44 cơ chế, chính sách đặc thù."
+  },
+  {
+    "q": "44 cơ chế, chính sách đặc thù của Nghị quyết 98 được chia thành bao nhiêu lĩnh vực?",
+    "opts": [
+      "5 lĩnh vực",
+      "7 lĩnh vực",
+      "9 lĩnh vực",
+      "12 lĩnh vực"
+    ],
+    "correct": 1,
+    "explain": "44 cơ chế, chính sách được chia thành 7 lĩnh vực."
+  },
+  {
+    "q": "Lĩnh vực nào sau đây KHÔNG nằm trong 7 lĩnh vực đặc thù của Nghị quyết 98?",
+    "opts": [
+      "Quản lý đầu tư",
+      "Tài chính, ngân sách Nhà nước",
+      "Quản lý y tế cộng đồng",
+      "Quản lý khoa học và công nghệ, đổi mới sáng tạo"
+    ],
+    "correct": 2,
+    "explain": "7 lĩnh vực gồm: quản lý đầu tư; tài chính - ngân sách; quản lý đô thị - tài nguyên - môi trường; ngành nghề ưu tiên thu hút đầu tư chiến lược; khoa học công nghệ - đổi mới sáng tạo; tổ chức bộ máy chính quyền TP.HCM và TP Thủ Đức. “Quản lý y tế cộng đồng” không thuộc danh sách này."
+  },
+  {
+    "q": "Nghị quyết 98/2023/QH15 chính thức có hiệu lực từ ngày nào?",
+    "opts": [
+      "02/7/1976",
+      "01/8/2023",
+      "30/4/1975",
+      "01/01/2024"
+    ],
+    "correct": 1,
+    "explain": "Nghị quyết 98/2023/QH15 có hiệu lực từ ngày 01/8/2023."
+  },
+  {
+    "q": "Theo Nghị quyết 98, việc phân cấp mạnh mẽ cho TP.HCM giúp Thành phố thực hiện những nhiệm vụ trước đây thuộc thẩm quyền của ai?",
+    "opts": [
+      "Trung ương",
+      "Các tỉnh lân cận",
+      "Doanh nghiệp tư nhân",
+      "Tổ chức quốc tế"
+    ],
+    "correct": 0,
+    "explain": "Nghị quyết phân cấp mạnh mẽ cho TP.HCM, giúp thực hiện nhiệm vụ trước đây thuộc thẩm quyền Trung ương."
+  },
+  {
+    "q": "Theo Nghị quyết 98, Hội đồng nhân dân TP.HCM có thẩm quyền quyết định điều gì liên quan đến cán bộ, công chức xã, phường?",
+    "opts": [
+      "Cơ cấu, số lượng cán bộ, công chức xã, phường",
+      "Chỉ định trực tiếp chủ tịch xã, phường",
+      "Xóa bỏ cấp xã, phường",
+      "Sáp nhập các xã, phường"
+    ],
+    "correct": 0,
+    "explain": "HĐND có quyền quyết định cơ cấu, số lượng cán bộ, công chức xã, phường."
+  },
+  {
+    "q": "Ngoài cơ cấu cán bộ, Hội đồng nhân dân TP.HCM còn có quyền ban hành điều gì cho cán bộ, công chức?",
+    "opts": [
+      "Tiêu chuẩn, định mức cho cán bộ, công chức",
+      "Quy định về trang phục công sở",
+      "Lịch nghỉ lễ riêng cho Thành phố",
+      "Quốc huy riêng của Thành phố"
+    ],
+    "correct": 0,
+    "explain": "HĐND có quyền ban hành tiêu chuẩn, định mức cho cán bộ, công chức."
+  },
+  {
+    "q": "HĐND TP.HCM theo Nghị quyết 98 có quyền quyết định ngân sách, thu nhập cho những đối tượng nào?",
+    "opts": [
+      "Chỉ cán bộ cấp Thành phố",
+      "Cán bộ, công chức, chuyên gia, nhà khoa học",
+      "Chỉ doanh nghiệp nhà nước",
+      "Chỉ giáo viên các trường công lập"
+    ],
+    "correct": 1,
+    "explain": "HĐND có quyền quyết định ngân sách và thu nhập cho cán bộ, công chức, chuyên gia, nhà khoa học."
+  },
+  {
+    "q": "Theo Nghị quyết 98, Uỷ ban nhân dân TP.HCM có quyền gì đối với các đơn vị sự nghiệp công lập?",
+    "opts": [
+      "Thành lập, tổ chức lại, hoặc giải thể",
+      "Chỉ được đề xuất lên Trung ương",
+      "Không có quyền can thiệp",
+      "Chuyển giao toàn bộ cho tư nhân"
+    ],
+    "correct": 0,
+    "explain": "UBND có quyền thành lập, tổ chức lại, hoặc giải thể các đơn vị sự nghiệp công lập."
+  },
+  {
+    "q": "UBND TP.HCM theo Nghị quyết 98 có quyền chuyển giao điều gì giữa các cơ quan chuyên môn thuộc Thành phố?",
+    "opts": [
+      "Chức năng, nhiệm vụ",
+      "Trụ sở làm việc",
+      "Ngân sách quốc phòng",
+      "Quyền lập pháp"
+    ],
+    "correct": 0,
+    "explain": "UBND có quyền chuyển giao chức năng, nhiệm vụ giữa các cơ quan chuyên môn thuộc Thành phố."
+  },
+  {
+    "q": "Điểm mới nổi bật của Nghị quyết 98/2023/QH15 so với các nghị quyết trước đó là gì?",
+    "opts": [
+      "Hạn chế đầu tư nước ngoài",
+      "Phân quyền, phân cấp mạnh mẽ cho Thành phố Hồ Chí Minh",
+      "Tăng cường các hoạt động từ thiện",
+      "Giảm ngân sách cấp cho Thành phố"
+    ],
+    "correct": 1,
+    "explain": "Điểm mới cốt lõi của Nghị quyết 98 là phân quyền, phân cấp mạnh mẽ cho TP.HCM."
+  },
+  {
+    "q": "Nhờ Nghị quyết 98, GRDP của Thành phố Hồ Chí Minh tăng bao nhiêu trong năm 2023?",
+    "opts": [
+      "3,2%",
+      "5,81%",
+      "8,5%",
+      "15,5%"
+    ],
+    "correct": 1,
+    "explain": "GRDP của Thành phố tăng 5,81% trong năm 2023, với mức tăng vượt bậc từ quý I đến quý III."
+  },
+  {
+    "q": "Trong năm 2023, Thành phố Hồ Chí Minh thu hút được bao nhiêu vốn FDI, dẫn đầu các thành phố lớn tại Việt Nam?",
+    "opts": [
+      "1,56 tỷ USD",
+      "5,58 tỷ USD",
+      "14,5 tỷ USD",
+      "171,4 tỷ USD"
+    ],
+    "correct": 1,
+    "explain": "TP.HCM thu hút 5,58 tỷ USD vốn FDI, dẫn đầu các thành phố lớn tại Việt Nam."
+  },
+  {
+    "q": "Chính sách hỗ trợ theo Nghị quyết 98 đã giúp Thành phố giải ngân bao nhiêu trên tổng số 2.796 tỷ đồng?",
+    "opts": [
+      "560 tỷ đồng",
+      "1.560 tỷ đồng",
+      "2.796 tỷ đồng",
+      "5.580 tỷ đồng"
+    ],
+    "correct": 1,
+    "explain": "Chính sách hỗ trợ giúp giải ngân 1.560/2.796 tỷ đồng, tăng cường tự chủ tài chính."
+  },
+  {
+    "q": "Việc giải ngân 1.560/2.796 tỷ đồng theo Nghị quyết 98 góp phần tăng cường điều gì cho Thành phố?",
+    "opts": [
+      "Tự chủ tài chính",
+      "Diện tích đất nông nghiệp",
+      "Số lượng trường đại học",
+      "Dân số đô thị"
+    ],
+    "correct": 0,
+    "explain": "Chính sách hỗ trợ giải ngân giúp tăng cường tự chủ tài chính cho Thành phố."
+  },
+  {
+    "q": "Nghị quyết 98 giúp Thành phố tối ưu hóa nguồn lực phát triển trong những lĩnh vực nào?",
+    "opts": [
+      "Nông nghiệp và lâm nghiệp",
+      "Đô thị và kinh tế",
+      "Quốc phòng và an ninh",
+      "Tôn giáo và tín ngưỡng"
+    ],
+    "correct": 1,
+    "explain": "Nghị quyết phân cấp mạnh mẽ, tối ưu hóa nguồn lực phát triển đô thị và kinh tế."
+  },
+  {
+    "q": "Trong hoạt động thảo luận nhóm ở phần này, học sinh được yêu cầu tìm hiểu điều gì về Nghị quyết 98?",
+    "opts": [
+      "Điểm mới của Nghị quyết 98 so với các nghị quyết trước đó",
+      "Danh sách các đại biểu Quốc hội khóa XV",
+      "Lịch sử hình thành Quốc hội Việt Nam",
+      "Ngân sách quốc phòng của Thành phố"
+    ],
+    "correct": 0,
+    "explain": "Nhiệm vụ thảo luận nhóm yêu cầu học sinh đọc thông tin và chỉ ra điểm mới trong Nghị quyết 98 so với các nghị quyết trước đó."
+  },
+  {
+    "q": "Xét tổng thể, Nghị quyết 98/2023/QH15 được xem là điểm nhấn cho giai đoạn nào trong lịch sử phát triển của Thành phố?",
+    "opts": [
+      "Giai đoạn trước năm 1859",
+      "Giai đoạn kháng chiến chống Mỹ",
+      "Giai đoạn đổi mới (1986 – nay)",
+      "Giai đoạn 1975 – 1976"
+    ],
+    "correct": 2,
+    "explain": "Nghị quyết 98/2023/QH15 là điểm nhấn cho giai đoạn đổi mới, giúp Thành phố phát huy nguồn lực và cải cách thể chế."
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+let current = 0;
+let score = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const timelineEl = document.getElementById('timeline');
+const qnumEl = document.getElementById('qnum');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const explainEl = document.getElementById('explain');
+const nextBtn = document.getElementById('nextBtn');
+const quizStage = document.getElementById('quizStage');
+const resultStage = document.getElementById('resultStage');
+const resultCard = document.getElementById('resultCard');
+
+function buildTimeline(){
+  timelineEl.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot-' + i;
+    timelineEl.appendChild(d);
+  });
+}
+
+function updateTimeline(){
+  QUESTIONS.forEach((_, i) => {
+    const d = document.getElementById('dot-' + i);
+    d.className = 'dot';
+    if (answers[i] === 'correct') d.classList.add('correct');
+    else if (answers[i] === 'wrong') d.classList.add('wrong');
+    else if (i === current) d.classList.add('current');
+  });
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  qnumEl.textContent = 'Câu ' + (current + 1);
+  questionEl.textContent = item.q;
+  optionsEl.innerHTML = '';
+  explainEl.classList.remove('show');
+  explainEl.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === QUESTIONS.length - 1 ? 'Xem kết quả' : 'Câu tiếp theo';
+
+  item.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + opt + '</span>';
+    btn.addEventListener('click', () => selectAnswer(i, btn));
+    optionsEl.appendChild(btn);
+  });
+  updateTimeline();
+}
+
+function selectAnswer(i, btnEl){
+  if (answers[current] !== null) return;
+  const item = QUESTIONS[current];
+  const isCorrect = i === item.correct;
+  answers[current] = isCorrect ? 'correct' : 'wrong';
+  if (isCorrect) score++;
+
+  const optBtns = optionsEl.querySelectorAll('.opt');
+  optBtns.forEach((b, idx) => {
+    b.classList.add('locked');
+    if (idx === item.correct) b.classList.add('correct');
+    if (idx === i && !isCorrect) b.classList.add('incorrect');
+  });
+
+  explainEl.innerHTML = '<b>' + (isCorrect ? 'Chính xác. ' : 'Chưa đúng. ') + '</b>' + item.explain;
+  explainEl.classList.add('show');
+  nextBtn.classList.add('show');
+  updateTimeline();
+}
+
+nextBtn.addEventListener('click', () => {
+  if (current < QUESTIONS.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizStage.classList.add('hidden');
+  resultStage.classList.remove('hidden');
+  resultCard.classList.add('show');
+  document.getElementById('scoreNum').textContent = score + '/' + QUESTIONS.length;
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  document.getElementById('scorePct').textContent = pct + '% câu trả lời đúng';
+
+  let verdict, desc;
+  if (pct >= 90){ verdict = 'Xuất sắc'; desc = 'Bạn nắm rất vững nội dung phần này.'; }
+  else if (pct >= 70){ verdict = 'Khá tốt'; desc = 'Bạn hiểu khá rõ nội dung bài học, chỉ còn vài chi tiết cần ôn lại.'; }
+  else if (pct >= 50){ verdict = 'Trung bình'; desc = 'Bạn đã nắm được nội dung chính, hãy xem lại các mốc quan trọng.'; }
+  else { verdict = 'Cần ôn lại'; desc = 'Hãy xem lại bài giảng phần này trước khi làm lại bài trắc nghiệm.'; }
+  document.getElementById('verdict').textContent = verdict;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0;
+  answers.fill(null);
+  resultStage.classList.add('hidden');
+  quizStage.classList.remove('hidden');
+  resultCard.classList.remove('show');
+  buildTimeline();
+  renderQuestion();
+});
+
+buildTimeline();
+renderQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phần I — Các giai đoạn phát triển | Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#8B1A2B;
+    --maroon-dark:#4A0E17;
+    --navy:#0F2E4C;
+    --gold:#D9A441;
+    --gold-light:#F0D9A6;
+    --cream:#FBF7F1;
+    --ink:#241315;
+    --muted:#8A7770;
+    --good:#2E6B4F;
+    --bad:#8B2E2E;
+    --line:#E7DCD2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(139,26,43,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(15,46,76,0.08), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    width:100%;
+    max-width:760px;
+    padding:2rem 1.5rem 4rem;
+    position:relative;
+    z-index:1;
+  }
+
+  .backlink{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.85rem; font-weight:600; color:var(--muted);
+    text-decoration:none; margin-bottom:1.4rem;
+  }
+  .backlink:hover{color:var(--maroon);}
+  .backlink svg{width:14px; height:14px;}
+
+  header{margin-bottom:2rem;}
+  .kicker{
+    display:flex; align-items:center; gap:.6rem;
+    font-size:.8rem; letter-spacing:.04em; color:var(--maroon); font-weight:600;
+    margin-bottom:.5rem;
+  }
+  .kicker .dash{width:22px; height:2px; background:var(--gold); display:inline-block;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(1.5rem, 3.8vw, 2.1rem);
+    line-height:1.2;
+    margin:0 0 .4rem;
+    color:var(--maroon-dark);
+  }
+  .sub{color:var(--muted); font-size:.96rem; max-width:56ch;}
+
+  .timeline{
+    display:flex; gap:4px; margin-top:1.6rem; flex-wrap:wrap;
+  }
+  .dot{
+    flex:1; min-width:8px; height:7px; border-radius:3px;
+    background:var(--line);
+    transition:background .3s ease;
+  }
+  .dot.current{background:var(--gold);}
+  .dot.correct{background:var(--good);}
+  .dot.wrong{background:var(--bad);}
+
+  .stage{position:relative;}
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:2.1rem 1.9rem;
+    box-shadow:0 18px 40px -22px rgba(74,14,23,0.35);
+  }
+  .qmeta{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:1rem;
+  }
+  .qnum{
+    font-family:'Fraunces',serif; font-weight:600; color:var(--gold);
+    font-size:1.05rem;
+  }
+  .qtotal{color:var(--muted); font-size:.85rem;}
+  .question{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    line-height:1.4;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 1.5rem;
+  }
+  .options{display:flex; flex-direction:column; gap:.65rem;}
+  .opt{
+    display:flex; align-items:center; gap:.85rem;
+    text-align:left;
+    border:1.5px solid var(--line);
+    background:#fffdfb;
+    border-radius:10px;
+    padding:.8rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:.96rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(.locked){border-color:var(--maroon); background:#FBF1EC;}
+  .opt .letter{
+    flex:0 0 auto;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--cream); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:.85rem; color:var(--maroon);
+  }
+  .opt.selected{border-color:var(--maroon); background:#FBF1EC;}
+  .opt.correct{border-color:var(--good); background:#EAF4EE;}
+  .opt.correct .letter{background:var(--good); color:#fff; border-color:var(--good);}
+  .opt.incorrect{border-color:var(--bad); background:#FBEDED;}
+  .opt.incorrect .letter{background:var(--bad); color:#fff; border-color:var(--bad);}
+  .opt.locked{cursor:default;}
+
+  .explain{
+    margin-top:1.3rem;
+    padding:1rem 1.1rem;
+    border-radius:10px;
+    background:var(--cream);
+    border-left:3px solid var(--gold);
+    font-size:.9rem;
+    line-height:1.55;
+    color:#4a3a35;
+    display:none;
+  }
+  .explain.show{display:block;}
+  .explain b{color:var(--maroon-dark);}
+
+  .controls{
+    display:flex; justify-content:flex-end; margin-top:1.6rem;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600; font-size:.92rem;
+    padding:.7rem 1.5rem;
+    border-radius:9px;
+    border:none;
+    background:var(--maroon-dark);
+    color:#fff;
+    cursor:pointer;
+    opacity:0; pointer-events:none;
+    transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease, background .15s ease;
+  }
+  .btn.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .btn:hover{background:var(--maroon);}
+
+  .result{
+    background:linear-gradient(160deg, var(--maroon-dark), var(--navy));
+    color:#fff;
+    border-radius:16px;
+    padding:3rem 2.2rem;
+    text-align:center;
+    display:none;
+  }
+  .result.show{display:block;}
+  .result .score{
+    font-family:'Fraunces',serif;
+    font-size:4.2rem; font-weight:700;
+    color:var(--gold);
+    line-height:1;
+    margin-bottom:.3rem;
+  }
+  .result .outof{color:#D8C3B0; font-size:1rem; margin-bottom:1.4rem;}
+  .result .verdict{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem; margin-bottom:.6rem;
+  }
+  .result p.desc{color:#E7D9CE; max-width:44ch; margin:0 auto 2rem; line-height:1.6; font-size:.95rem;}
+  .result .btnrow{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;}
+  .result .btn{background:var(--gold); color:var(--maroon-dark); opacity:1; pointer-events:auto; transform:none;}
+  .result .btn:hover{background:var(--gold-light);}
+  .result .btn.secondary{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.4);}
+  .result .btn.secondary:hover{background:rgba(255,255,255,0.1);}
+
+  .stage.hidden{display:none;}
+
+  footer{
+    margin-top:2.5rem;
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+    Quay lại trang chủ
+  </a>
+  <header>
+    <div class="kicker"><span class="dash"></span>PHẦN I — LUYỆN TẬP</div>
+    <h1>Các giai đoạn phát triển thành phố Hồ Chí Minh</h1>
+    <p class="sub">20 câu hỏi trắc nghiệm về hành trình từ Sài Gòn trước năm 1859 đến giai đoạn đổi mới ngày nay.</p>
+    <div class="timeline" id="timeline"></div>
+  </header>
+
+  <div class="stage" id="quizStage">
+    <div class="card">
+      <div class="qmeta">
+        <span class="qnum" id="qnum">Câu 1</span>
+        <span class="qtotal">/ 20</span>
+      </div>
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <div class="explain" id="explain"></div>
+      <div class="controls">
+        <button class="btn" id="nextBtn">Câu tiếp theo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage hidden" id="resultStage">
+    <div class="result" id="resultCard">
+      <div class="score" id="scoreNum">0/20</div>
+      <div class="outof" id="scorePct"></div>
+      <div class="verdict" id="verdict"></div>
+      <p class="desc" id="verdictDesc"></p>
+      <div class="btnrow">
+        <button class="btn" id="retryBtn">Làm lại</button>
+        <a class="btn secondary" href="main.html" style="text-decoration:none; display:inline-flex; align-items:center;">Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>Giáo dục địa phương · Lớp 12 · Chủ đề 1</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    "q": "Phủ Gia Định — mốc đưa vùng đất Sài Gòn vào quản lý chính thức của triều đình — được lập vào năm nào?",
+    "opts": [
+      "1859",
+      "1698",
+      "1802",
+      "1945"
+    ],
+    "correct": 1,
+    "explain": "Năm 1698, phủ Gia Định được lập, chính thức đưa vùng đất này vào sự quản lý của triều đình."
+  },
+  {
+    "q": "Trước năm 1859, việc chia cắt địa phận, thiết lập xã, ấp ở Sài Gòn nhằm mục đích gì?",
+    "opts": [
+      "Phát triển du lịch",
+      "Quản lý hành chính theo từng khu vực",
+      "Xây dựng quân cảng",
+      "Mở rộng giao thương với Pháp"
+    ],
+    "correct": 1,
+    "explain": "Việc chia xã, ấp giúp quản lý hành chính chặt chẽ hơn ở từng khu vực dân cư."
+  },
+  {
+    "q": "Chính sách ổn định dân cư thời kỳ đầu đã chấm dứt điều gì?",
+    "opts": [
+      "Chế độ điền trang thái ấp",
+      "Tình trạng tự quản tự phát của lưu dân",
+      "Chế độ thi cử Nho học",
+      "Việc khai thác khoáng sản"
+    ],
+    "correct": 1,
+    "explain": "Chính sách này chấm dứt thời kỳ lưu dân tự phát tự quản, đưa các hoạt động vào quy định pháp luật."
+  },
+  {
+    "q": "Vùng đất Bình Dương xưa nổi tiếng với những làng nghề nào?",
+    "opts": [
+      "Dệt lụa, làm giấy, đúc đồng",
+      "Gốm, sơn mài, điêu khắc gỗ",
+      "Đóng tàu, làm muối",
+      "Trồng chè, làm nón lá"
+    ],
+    "correct": 1,
+    "explain": "Bình Dương xưa hình thành các làng nghề gốm, sơn mài, điêu khắc gỗ."
+  },
+  {
+    "q": "Vùng đất nào ven sông Sài Gòn, sông Bé nổi tiếng với nghề trồng cây ăn trái, tiêu biểu là Lái Thiêu?",
+    "opts": [
+      "Bình Dương xưa",
+      "Bà Rịa – Vũng Tàu xưa",
+      "Biên Hòa",
+      "Gia Định"
+    ],
+    "correct": 0,
+    "explain": "Đất đai màu mỡ ven sông Sài Gòn, sông Bé thuận lợi cho trồng lúa, cây ăn trái, tiêu biểu là Lái Thiêu nổi tiếng."
+  },
+  {
+    "q": "Cuối thế kỷ XVII, chúa Nguyễn cho lập đạo Tân Châu, sau đổi thành trấn gì (bao gồm vùng Bà Rịa – Vũng Tàu ngày nay)?",
+    "opts": [
+      "Trấn Biên Hòa",
+      "Trấn Gia Định",
+      "Trấn Phiên An",
+      "Trấn Vĩnh Thanh"
+    ],
+    "correct": 0,
+    "explain": "Đạo Tân Châu sau đổi thành trấn Biên Hòa, trong đó có vùng Bà Rịa – Vũng Tàu ngày nay."
+  },
+  {
+    "q": "Năm 1698, vùng Bà Rịa thuộc phủ nào, trước khi lần lượt đổi thành huyện Long Thành rồi phủ Phước Tuy?",
+    "opts": [
+      "Phủ Gia Định",
+      "Phủ Phước Long",
+      "Phủ Tân Bình",
+      "Phủ Hoàng Trấn"
+    ],
+    "correct": 1,
+    "explain": "Năm 1698, vùng Bà Rịa thuộc phủ Phước Long, sau đổi thành huyện Long Thành, rồi phủ Phước Tuy (thế kỷ XVIII)."
+  },
+  {
+    "q": "Kinh tế biển ở vùng Bà Rịa – Vũng Tàu xưa phát triển sớm qua những nghề nào?",
+    "opts": [
+      "Đánh bắt hải sản, làm muối",
+      "Khai thác than đá",
+      "Chăn nuôi gia súc lớn",
+      "Trồng cà phê, cao su"
+    ],
+    "correct": 0,
+    "explain": "Nghề đánh bắt hải sản, làm muối, nông nghiệp ven biển phát triển sớm ở vùng này."
+  },
+  {
+    "q": "Thương cảng cổ nào của vùng Bà Rịa – Vũng Tàu từng là nơi tàu thuyền quốc tế neo đậu?",
+    "opts": [
+      "Cảng Nhà Rồng",
+      "Cảng Cần Giờ – Vũng Tàu",
+      "Cảng Sài Gòn",
+      "Cảng Cam Ranh"
+    ],
+    "correct": 1,
+    "explain": "Cần Giờ – Vũng Tàu từng là thương cảng cổ, nơi tàu thuyền quốc tế neo đậu giao thương."
+  },
+  {
+    "q": "Giai đoạn Sài Gòn dưới ách cai trị của thực dân Pháp kéo dài trong khoảng thời gian nào?",
+    "opts": [
+      "1698 – 1859",
+      "1859 – 1945",
+      "1954 – 1975",
+      "1975 – 1986"
+    ],
+    "correct": 1,
+    "explain": "Giai đoạn Sài Gòn thời Pháp thuộc được xác định từ năm 1859 đến năm 1945."
+  },
+  {
+    "q": "Sau Hiệp định Giơ-ne-vơ (1954–1955), Mỹ đã làm gì đối với Sài Gòn?",
+    "opts": [
+      "Trả lại chính quyền cho triều Nguyễn",
+      "Lập chính quyền Việt Nam Cộng hoà, biến Sài Gòn thành thủ đô",
+      "Rút toàn bộ quân đội khỏi miền Nam",
+      "Sáp nhập Sài Gòn vào Campuchia"
+    ],
+    "correct": 1,
+    "explain": "Mỹ lập chính quyền Việt Nam Cộng hoà, biến Sài Gòn thành thủ đô nhằm âm mưu chia cắt đất nước lâu dài."
+  },
+  {
+    "q": "Giai đoạn 1954–1960, phong trào nào được phát động tại Sài Gòn – Chợ Lớn và nhận được sự hưởng ứng rộng rãi?",
+    "opts": [
+      "Phong trào Đông Du",
+      "Phong trào bảo vệ hoà bình Sài Gòn – Chợ Lớn",
+      "Phong trào Duy Tân",
+      "Phong trào Cần Vương"
+    ],
+    "correct": 1,
+    "explain": "Phong trào bảo vệ hoà bình Sài Gòn – Chợ Lớn được phát động, các Ủy ban hoà bình cũng được thành lập giai đoạn này."
+  },
+  {
+    "q": "Giai đoạn 1961–1968, quân dân Sài Gòn cùng cả nước chống lại những chiến lược nào của Mỹ?",
+    "opts": [
+      "“Việt Nam hóa chiến tranh” và “Đông Dương hóa chiến tranh”",
+      "“Chiến tranh đặc biệt” và “Chiến tranh cục bộ”",
+      "“Chiến tranh phá hoại” miền Bắc",
+      "“Bình định nông thôn”"
+    ],
+    "correct": 1,
+    "explain": "Giai đoạn này, quân dân Sài Gòn chống lại chiến lược Chiến tranh đặc biệt và Chiến tranh cục bộ của Mỹ."
+  },
+  {
+    "q": "Sự kiện Xuân Mậu Thân 1968 tại Sài Gòn gắn liền với trận tập kích vào địa điểm nào, gây chấn động cả nước Mỹ?",
+    "opts": [
+      "Dinh Độc Lập",
+      "Tòa Đại sứ Mỹ",
+      "Sân bay Tân Sơn Nhất",
+      "Bộ Tổng tham mưu"
+    ],
+    "correct": 1,
+    "explain": "Trận tập kích vào Tòa Đại sứ Mỹ trong Tổng tiến công và nổi dậy Xuân Mậu Thân 1968 làm rung chuyển chiến trường miền Nam và cả nước Mỹ."
+  },
+  {
+    "q": "Chiến dịch Hồ Chí Minh giải phóng hoàn toàn Sài Gòn, kết thúc thắng lợi cuộc kháng chiến chống Mỹ, diễn ra vào ngày nào?",
+    "opts": [
+      "07/5/1954",
+      "02/9/1945",
+      "30/4/1975",
+      "02/7/1976"
+    ],
+    "correct": 2,
+    "explain": "Ngày 30/4/1975, Chiến dịch Hồ Chí Minh kết thúc thắng lợi, giải phóng hoàn toàn Sài Gòn, thống nhất đất nước."
+  },
+  {
+    "q": "Ý nghĩa nào sau đây KHÔNG đúng khi nói về Chiến dịch Hồ Chí Minh?",
+    "opts": [
+      "Giải phóng Sài Gòn khỏi ách thống trị của Mỹ và chính quyền Việt Nam Cộng hoà",
+      "Kết thúc kháng chiến chống Mỹ, thống nhất đất nước sau hơn 20 năm chia cắt",
+      "Đưa Việt Nam bước vào kỷ nguyên độc lập, xây dựng xã hội chủ nghĩa",
+      "Thiết lập phủ Gia Định để quản lý hành chính vùng đất mới"
+    ],
+    "correct": 3,
+    "explain": "Việc lập phủ Gia Định diễn ra từ năm 1698, thuộc giai đoạn trước 1859, không liên quan đến Chiến dịch Hồ Chí Minh."
+  },
+  {
+    "q": "Thành phố Sài Gòn – Gia Định chính thức được đổi tên thành Thành phố Hồ Chí Minh vào ngày nào?",
+    "opts": [
+      "30/4/1975",
+      "02/7/1976",
+      "01/8/2023",
+      "02/9/1945"
+    ],
+    "correct": 1,
+    "explain": "Ngày 02/7/1976, Thành phố Sài Gòn – Gia Định được đổi tên thành Thành phố Hồ Chí Minh."
+  },
+  {
+    "q": "Giai đoạn 1976–1980, Thành phố Hồ Chí Minh tập trung thực hiện nhiệm vụ trọng tâm nào?",
+    "opts": [
+      "Thí điểm khoán sản phẩm trong nông nghiệp",
+      "Cải tạo xã hội chủ nghĩa trong kinh tế – văn hóa, khôi phục hạ tầng",
+      "Thu hút vốn đầu tư nước ngoài (FDI)",
+      "Xây dựng trung tâm tài chính quốc tế"
+    ],
+    "correct": 1,
+    "explain": "Giai đoạn 1976–1980, Thành phố thực hiện cải tạo xã hội chủ nghĩa, khôi phục hạ tầng, y tế, giáo dục, tái thiết sản xuất."
+  },
+  {
+    "q": "Giai đoạn 1981–1985 đánh dấu bước đổi mới nào trong quản lý kinh tế của Thành phố?",
+    "opts": [
+      "Cổ phần hóa toàn bộ doanh nghiệp nhà nước",
+      "Thí điểm cơ chế khoán sản phẩm trong nông nghiệp và công nghiệp",
+      "Ban hành Nghị quyết 98/2023/QH15",
+      "Mở cửa thị trường chứng khoán"
+    ],
+    "correct": 1,
+    "explain": "1981–1985, Thành phố thí điểm cơ chế khoán sản phẩm, dần trở thành trung tâm phát triển kinh tế – xã hội của cả nước."
+  },
+  {
+    "q": "Thành tựu giai đoạn 1981–1985 đã đặt nền móng cho công cuộc nào bắt đầu từ năm 1986?",
+    "opts": [
+      "Đổi mới toàn diện",
+      "Công nghiệp hóa – hiện đại hóa nông thôn",
+      "Cải cách ruộng đất",
+      "Xây dựng vùng kinh tế mới"
+    ],
+    "correct": 0,
+    "explain": "Thành phố từng bước khẳng định vai trò trung tâm kinh tế, văn hóa, giáo dục, đặt nền móng cho công cuộc Đổi mới toàn diện từ năm 1986."
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+let current = 0;
+let score = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const timelineEl = document.getElementById('timeline');
+const qnumEl = document.getElementById('qnum');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const explainEl = document.getElementById('explain');
+const nextBtn = document.getElementById('nextBtn');
+const quizStage = document.getElementById('quizStage');
+const resultStage = document.getElementById('resultStage');
+const resultCard = document.getElementById('resultCard');
+
+function buildTimeline(){
+  timelineEl.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot-' + i;
+    timelineEl.appendChild(d);
+  });
+}
+
+function updateTimeline(){
+  QUESTIONS.forEach((_, i) => {
+    const d = document.getElementById('dot-' + i);
+    d.className = 'dot';
+    if (answers[i] === 'correct') d.classList.add('correct');
+    else if (answers[i] === 'wrong') d.classList.add('wrong');
+    else if (i === current) d.classList.add('current');
+  });
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  qnumEl.textContent = 'Câu ' + (current + 1);
+  questionEl.textContent = item.q;
+  optionsEl.innerHTML = '';
+  explainEl.classList.remove('show');
+  explainEl.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === QUESTIONS.length - 1 ? 'Xem kết quả' : 'Câu tiếp theo';
+
+  item.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + opt + '</span>';
+    btn.addEventListener('click', () => selectAnswer(i, btn));
+    optionsEl.appendChild(btn);
+  });
+  updateTimeline();
+}
+
+function selectAnswer(i, btnEl){
+  if (answers[current] !== null) return;
+  const item = QUESTIONS[current];
+  const isCorrect = i === item.correct;
+  answers[current] = isCorrect ? 'correct' : 'wrong';
+  if (isCorrect) score++;
+
+  const optBtns = optionsEl.querySelectorAll('.opt');
+  optBtns.forEach((b, idx) => {
+    b.classList.add('locked');
+    if (idx === item.correct) b.classList.add('correct');
+    if (idx === i && !isCorrect) b.classList.add('incorrect');
+  });
+
+  explainEl.innerHTML = '<b>' + (isCorrect ? 'Chính xác. ' : 'Chưa đúng. ') + '</b>' + item.explain;
+  explainEl.classList.add('show');
+  nextBtn.classList.add('show');
+  updateTimeline();
+}
+
+nextBtn.addEventListener('click', () => {
+  if (current < QUESTIONS.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizStage.classList.add('hidden');
+  resultStage.classList.remove('hidden');
+  resultCard.classList.add('show');
+  document.getElementById('scoreNum').textContent = score + '/' + QUESTIONS.length;
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  document.getElementById('scorePct').textContent = pct + '% câu trả lời đúng';
+
+  let verdict, desc;
+  if (pct >= 90){ verdict = 'Xuất sắc'; desc = 'Bạn nắm rất vững nội dung phần này.'; }
+  else if (pct >= 70){ verdict = 'Khá tốt'; desc = 'Bạn hiểu khá rõ nội dung bài học, chỉ còn vài chi tiết cần ôn lại.'; }
+  else if (pct >= 50){ verdict = 'Trung bình'; desc = 'Bạn đã nắm được nội dung chính, hãy xem lại các mốc quan trọng.'; }
+  else { verdict = 'Cần ôn lại'; desc = 'Hãy xem lại bài giảng phần này trước khi làm lại bài trắc nghiệm.'; }
+  document.getElementById('verdict').textContent = verdict;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0;
+  answers.fill(null);
+  resultStage.classList.add('hidden');
+  quizStage.classList.remove('hidden');
+  resultCard.classList.remove('show');
+  buildTimeline();
+  renderQuestion();
+});
+
+buildTimeline();
+renderQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phần III — Dự báo phát triển đến 2030, 2045 | Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#8B1A2B;
+    --maroon-dark:#4A0E17;
+    --navy:#0F2E4C;
+    --gold:#D9A441;
+    --gold-light:#F0D9A6;
+    --cream:#FBF7F1;
+    --ink:#241315;
+    --muted:#8A7770;
+    --good:#2E6B4F;
+    --bad:#8B2E2E;
+    --line:#E7DCD2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(139,26,43,0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(15,46,76,0.08), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    width:100%;
+    max-width:760px;
+    padding:2rem 1.5rem 4rem;
+    position:relative;
+    z-index:1;
+  }
+
+  .backlink{
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.85rem; font-weight:600; color:var(--muted);
+    text-decoration:none; margin-bottom:1.4rem;
+  }
+  .backlink:hover{color:var(--maroon);}
+  .backlink svg{width:14px; height:14px;}
+
+  header{margin-bottom:2rem;}
+  .kicker{
+    display:flex; align-items:center; gap:.6rem;
+    font-size:.8rem; letter-spacing:.04em; color:var(--maroon); font-weight:600;
+    margin-bottom:.5rem;
+  }
+  .kicker .dash{width:22px; height:2px; background:var(--gold); display:inline-block;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(1.5rem, 3.8vw, 2.1rem);
+    line-height:1.2;
+    margin:0 0 .4rem;
+    color:var(--maroon-dark);
+  }
+  .sub{color:var(--muted); font-size:.96rem; max-width:56ch;}
+
+  .timeline{
+    display:flex; gap:4px; margin-top:1.6rem; flex-wrap:wrap;
+  }
+  .dot{
+    flex:1; min-width:8px; height:7px; border-radius:3px;
+    background:var(--line);
+    transition:background .3s ease;
+  }
+  .dot.current{background:var(--gold);}
+  .dot.correct{background:var(--good);}
+  .dot.wrong{background:var(--bad);}
+
+  .stage{position:relative;}
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:2.1rem 1.9rem;
+    box-shadow:0 18px 40px -22px rgba(74,14,23,0.35);
+  }
+  .qmeta{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:1rem;
+  }
+  .qnum{
+    font-family:'Fraunces',serif; font-weight:600; color:var(--gold);
+    font-size:1.05rem;
+  }
+  .qtotal{color:var(--muted); font-size:.85rem;}
+  .question{
+    font-family:'Fraunces',serif;
+    font-size:1.25rem;
+    line-height:1.4;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 1.5rem;
+  }
+  .options{display:flex; flex-direction:column; gap:.65rem;}
+  .opt{
+    display:flex; align-items:center; gap:.85rem;
+    text-align:left;
+    border:1.5px solid var(--line);
+    background:#fffdfb;
+    border-radius:10px;
+    padding:.8rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:.96rem;
+    color:var(--ink);
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(.locked){border-color:var(--maroon); background:#FBF1EC;}
+  .opt .letter{
+    flex:0 0 auto;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--cream); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600; font-size:.85rem; color:var(--maroon);
+  }
+  .opt.selected{border-color:var(--maroon); background:#FBF1EC;}
+  .opt.correct{border-color:var(--good); background:#EAF4EE;}
+  .opt.correct .letter{background:var(--good); color:#fff; border-color:var(--good);}
+  .opt.incorrect{border-color:var(--bad); background:#FBEDED;}
+  .opt.incorrect .letter{background:var(--bad); color:#fff; border-color:var(--bad);}
+  .opt.locked{cursor:default;}
+
+  .explain{
+    margin-top:1.3rem;
+    padding:1rem 1.1rem;
+    border-radius:10px;
+    background:var(--cream);
+    border-left:3px solid var(--gold);
+    font-size:.9rem;
+    line-height:1.55;
+    color:#4a3a35;
+    display:none;
+  }
+  .explain.show{display:block;}
+  .explain b{color:var(--maroon-dark);}
+
+  .controls{
+    display:flex; justify-content:flex-end; margin-top:1.6rem;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600; font-size:.92rem;
+    padding:.7rem 1.5rem;
+    border-radius:9px;
+    border:none;
+    background:var(--maroon-dark);
+    color:#fff;
+    cursor:pointer;
+    opacity:0; pointer-events:none;
+    transform:translateY(4px);
+    transition:opacity .25s ease, transform .25s ease, background .15s ease;
+  }
+  .btn.show{opacity:1; pointer-events:auto; transform:translateY(0);}
+  .btn:hover{background:var(--maroon);}
+
+  .result{
+    background:linear-gradient(160deg, var(--maroon-dark), var(--navy));
+    color:#fff;
+    border-radius:16px;
+    padding:3rem 2.2rem;
+    text-align:center;
+    display:none;
+  }
+  .result.show{display:block;}
+  .result .score{
+    font-family:'Fraunces',serif;
+    font-size:4.2rem; font-weight:700;
+    color:var(--gold);
+    line-height:1;
+    margin-bottom:.3rem;
+  }
+  .result .outof{color:#D8C3B0; font-size:1rem; margin-bottom:1.4rem;}
+  .result .verdict{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem; margin-bottom:.6rem;
+  }
+  .result p.desc{color:#E7D9CE; max-width:44ch; margin:0 auto 2rem; line-height:1.6; font-size:.95rem;}
+  .result .btnrow{display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;}
+  .result .btn{background:var(--gold); color:var(--maroon-dark); opacity:1; pointer-events:auto; transform:none;}
+  .result .btn:hover{background:var(--gold-light);}
+  .result .btn.secondary{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.4);}
+  .result .btn.secondary:hover{background:rgba(255,255,255,0.1);}
+
+  .stage.hidden{display:none;}
+
+  footer{
+    margin-top:2.5rem;
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="backlink" href="main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+    Quay lại trang chủ
+  </a>
+  <header>
+    <div class="kicker"><span class="dash"></span>PHẦN III — LUYỆN TẬP</div>
+    <h1>Dự báo xu hướng phát triển đến năm 2030, tầm nhìn 2045</h1>
+    <p class="sub">20 câu hỏi trắc nghiệm về mục tiêu tăng trưởng, GRDP, kinh tế số và định hướng vị thế của Thành phố.</p>
+    <div class="timeline" id="timeline"></div>
+  </header>
+
+  <div class="stage" id="quizStage">
+    <div class="card">
+      <div class="qmeta">
+        <span class="qnum" id="qnum">Câu 1</span>
+        <span class="qtotal">/ 20</span>
+      </div>
+      <p class="question" id="question"></p>
+      <div class="options" id="options"></div>
+      <div class="explain" id="explain"></div>
+      <div class="controls">
+        <button class="btn" id="nextBtn">Câu tiếp theo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage hidden" id="resultStage">
+    <div class="result" id="resultCard">
+      <div class="score" id="scoreNum">0/20</div>
+      <div class="outof" id="scorePct"></div>
+      <div class="verdict" id="verdict"></div>
+      <p class="desc" id="verdictDesc"></p>
+      <div class="btnrow">
+        <button class="btn" id="retryBtn">Làm lại</button>
+        <a class="btn secondary" href="main.html" style="text-decoration:none; display:inline-flex; align-items:center;">Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>Giáo dục địa phương · Lớp 12 · Chủ đề 1</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    "q": "Theo mục tiêu phát triển, đến năm 2030 Thành phố Hồ Chí Minh đặt chỉ tiêu tăng trưởng kinh tế bao nhiêu %/năm?",
+    "opts": [
+      "5 – 5,5%/năm",
+      "6 – 6,5%/năm",
+      "8 – 8,5%/năm",
+      "10 – 10,5%/năm"
+    ],
+    "correct": 2,
+    "explain": "Mục tiêu tăng trưởng kinh tế của Thành phố đến 2030 là 8 – 8,5%/năm."
+  },
+  {
+    "q": "Mục tiêu GRDP bình quân đầu người của Thành phố đến năm 2030 là bao nhiêu?",
+    "opts": [
+      "7.204 USD",
+      "10.000 USD",
+      "14.500 USD",
+      "20.000 USD"
+    ],
+    "correct": 2,
+    "explain": "Mục tiêu đến 2030, GRDP bình quân đầu người đạt 14.500 USD."
+  },
+  {
+    "q": "Đến năm 2030, kinh tế số được kỳ vọng chiếm bao nhiêu phần trăm GRDP của Thành phố?",
+    "opts": [
+      "15%",
+      "25%",
+      "40%",
+      "60%"
+    ],
+    "correct": 2,
+    "explain": "Mục tiêu đến 2030, kinh tế số chiếm khoảng 40% GRDP."
+  },
+  {
+    "q": "Đến năm 2030, Thành phố Hồ Chí Minh đặt mục tiêu giữ vị thế dẫn đầu ở khu vực nào?",
+    "opts": [
+      "Nam Á",
+      "Đông Nam Á",
+      "Đông Bắc Á",
+      "Trung Đông"
+    ],
+    "correct": 1,
+    "explain": "Mục tiêu đến 2030 là giữ vị thế dẫn đầu Đông Nam Á."
+  },
+  {
+    "q": "Theo mục tiêu đến 2030, Thành phố Hồ Chí Minh hướng tới trở thành trung tâm của những lĩnh vực nào?",
+    "opts": [
+      "Nông nghiệp, thủy sản",
+      "Kinh tế, tài chính, văn hóa, giáo dục",
+      "Khai khoáng, luyện kim",
+      "Quốc phòng, an ninh"
+    ],
+    "correct": 1,
+    "explain": "Thành phố hướng tới trở thành trung tâm kinh tế, tài chính, văn hóa, giáo dục."
+  },
+  {
+    "q": "Về nguồn nhân lực, mục tiêu phát triển đến 2030 nhấn mạnh yếu tố nào?",
+    "opts": [
+      "Nguồn nhân lực giá rẻ",
+      "Nguồn nhân lực chất lượng cao",
+      "Chỉ tuyển dụng lao động phổ thông",
+      "Hạn chế lao động nhập cư"
+    ],
+    "correct": 1,
+    "explain": "Mục tiêu là trở thành thành phố hiện đại, sáng tạo với nguồn nhân lực chất lượng cao."
+  },
+  {
+    "q": "Theo tầm nhìn đến năm 2045, Thành phố Hồ Chí Minh sẽ phát triển ngang tầm với đối tượng nào?",
+    "opts": [
+      "Các đô thị lớn toàn cầu",
+      "Các huyện lân cận",
+      "Chỉ các thành phố trong nước",
+      "Các thị trấn nhỏ ở châu Âu"
+    ],
+    "correct": 0,
+    "explain": "Tầm nhìn 2045: Thành phố phát triển ngang tầm các đô thị lớn toàn cầu."
+  },
+  {
+    "q": "Tầm nhìn đến năm 2045 xác định Thành phố Hồ Chí Minh là trung tâm kinh tế, tài chính, dịch vụ của khu vực nào?",
+    "opts": [
+      "Châu Âu",
+      "Châu Phi",
+      "Châu Á",
+      "Châu Đại Dương"
+    ],
+    "correct": 2,
+    "explain": "Tầm nhìn 2045: Thành phố trở thành trung tâm kinh tế, tài chính, dịch vụ của châu Á."
+  },
+  {
+    "q": "Đến năm 2045, Thành phố Hồ Chí Minh được kỳ vọng trở thành như thế nào đối với du khách và nhà đầu tư quốc tế?",
+    "opts": [
+      "Điểm đến hấp dẫn toàn cầu",
+      "Khu vực hạn chế người nước ngoài",
+      "Thành phố chỉ phục vụ nội địa",
+      "Trung tâm công nghiệp nặng duy nhất"
+    ],
+    "correct": 0,
+    "explain": "Tầm nhìn 2045: Thành phố là điểm đến hấp dẫn toàn cầu."
+  },
+  {
+    "q": "Theo định hướng phát triển, Thành phố Hồ Chí Minh sẽ là hạt nhân của vùng nào?",
+    "opts": [
+      "Đồng bằng sông Cửu Long",
+      "Đông Nam Bộ",
+      "Tây Nguyên",
+      "Duyên hải Nam Trung Bộ"
+    ],
+    "correct": 1,
+    "explain": "Thành phố sẽ là hạt nhân của vùng Đông Nam Bộ."
+  },
+  {
+    "q": "Theo định hướng phát triển, Thành phố Hồ Chí Minh được xác định là gì đối với cả nước?",
+    "opts": [
+      "Cực tăng trưởng của cả nước",
+      "Vùng đệm kinh tế",
+      "Khu vực phi thương mại",
+      "Trung tâm hành chính duy nhất"
+    ],
+    "correct": 0,
+    "explain": "Thành phố được xác định là cực tăng trưởng của cả nước."
+  },
+  {
+    "q": "Theo tầm nhìn phát triển, Thành phố Hồ Chí Minh sẽ thu hút những loại hình tổ chức quốc tế nào?",
+    "opts": [
+      "Các định chế tài chính và tập đoàn kinh tế quốc tế",
+      "Chỉ các tổ chức phi chính phủ",
+      "Các đội tuyển thể thao quốc tế",
+      "Các trường phổ thông quốc tế"
+    ],
+    "correct": 0,
+    "explain": "Thành phố hướng tới thu hút các định chế tài chính và tập đoàn kinh tế quốc tế."
+  },
+  {
+    "q": "So với mục tiêu năm 2030 (dẫn đầu Đông Nam Á), tầm nhìn năm 2045 mở rộng phạm vi vị thế của Thành phố lên khu vực nào?",
+    "opts": [
+      "Vẫn giữ nguyên Đông Nam Á",
+      "Châu Á và tầm vóc toàn cầu",
+      "Chỉ riêng khu vực Đông Nam Bộ",
+      "Chỉ riêng Việt Nam"
+    ],
+    "correct": 1,
+    "explain": "Tầm nhìn 2045 mở rộng vị thế của Thành phố lên tầm châu Á và điểm đến hấp dẫn toàn cầu, cao hơn mục tiêu dẫn đầu Đông Nam Á vào 2030."
+  },
+  {
+    "q": "So với GRDP bình quân đầu người khoảng 7.204 USD (năm 2023), mục tiêu 14.500 USD vào năm 2030 cho thấy định hướng tăng trưởng như thế nào?",
+    "opts": [
+      "Giảm khoảng một nửa",
+      "Giữ nguyên mức hiện tại",
+      "Tăng khoảng gấp đôi",
+      "Tăng gấp 10 lần"
+    ],
+    "correct": 2,
+    "explain": "14.500 USD so với khoảng 7.204 USD cho thấy mục tiêu tăng trưởng GRDP bình quân đầu người gấp khoảng hai lần trong khoảng thời gian này."
+  },
+  {
+    "q": "Trong hoạt động thảo luận cặp đôi của phần này, học sinh cần trình bày nội dung gì?",
+    "opts": [
+      "Mục tiêu và dẫn chứng xu hướng phát triển của Thành phố đến 2030, 2045",
+      "Tiểu sử của Nguyễn Hữu Cảnh",
+      "Diễn biến Chiến dịch Hồ Chí Minh",
+      "Nội dung Hiệp định Giơ-ne-vơ"
+    ],
+    "correct": 0,
+    "explain": "Học sinh trình bày mục tiêu và dẫn chứng xu hướng phát triển của Thành phố đến năm 2030 và 2045."
+  },
+  {
+    "q": "Bên cạnh trình bày mục tiêu phát triển, học sinh còn được yêu cầu đề xuất điều gì trong hoạt động thảo luận?",
+    "opts": [
+      "Giải pháp để đạt được mục tiêu phát triển trong thời gian tới",
+      "Danh sách các trường đại học tại Thành phố",
+      "Kế hoạch du lịch cá nhân",
+      "Bảng xếp hạng các quốc gia châu Á"
+    ],
+    "correct": 0,
+    "explain": "Học sinh cần đề xuất giải pháp để Thành phố đạt được mục tiêu phát triển trong thời gian tới."
+  },
+  {
+    "q": "Thời gian dành cho hoạt động thảo luận cặp đôi về xu hướng phát triển Thành phố là bao lâu?",
+    "opts": [
+      "2 phút",
+      "4 phút",
+      "5 phút",
+      "10 phút"
+    ],
+    "correct": 1,
+    "explain": "Thời gian thảo luận cặp đôi cho hoạt động này là 4 phút."
+  },
+  {
+    "q": "Chỉ tiêu tăng trưởng kinh tế 8 – 8,5%/năm là mục tiêu được đặt ra cho mốc thời gian nào?",
+    "opts": [
+      "Đến năm 2025",
+      "Đến năm 2030",
+      "Đến năm 2045",
+      "Đến năm 2050"
+    ],
+    "correct": 1,
+    "explain": "Chỉ tiêu tăng trưởng 8 – 8,5%/năm là mục tiêu đến năm 2030."
+  },
+  {
+    "q": "“Hạt nhân của vùng Đông Nam Bộ, cực tăng trưởng của cả nước” là định hướng thuộc nội dung nào của bài học?",
+    "opts": [
+      "Phần I — Các giai đoạn phát triển",
+      "Phần II — Nghị quyết 98/2023/QH15",
+      "Phần III — Dự báo xu hướng phát triển đến 2030, tầm nhìn 2045",
+      "Không thuộc nội dung nào trong bài"
+    ],
+    "correct": 2,
+    "explain": "Đây là nội dung thuộc Phần III, dự báo xu hướng phát triển của Thành phố đến năm 2030, tầm nhìn đến 2045."
+  },
+  {
+    "q": "Nhận định nào sau đây ĐÚNG với định hướng phát triển của Thành phố Hồ Chí Minh đến năm 2045?",
+    "opts": [
+      "Thành phố sẽ tập trung phát triển nông nghiệp làm chủ đạo",
+      "Thành phố phát triển ngang tầm các đô thị lớn toàn cầu, trung tâm kinh tế – tài chính của châu Á",
+      "Thành phố sẽ hạn chế thu hút đầu tư nước ngoài",
+      "Thành phố sẽ giảm vai trò trung tâm kinh tế của vùng Đông Nam Bộ"
+    ],
+    "correct": 1,
+    "explain": "Tầm nhìn 2045 xác định Thành phố phát triển ngang tầm các đô thị lớn toàn cầu, là trung tâm kinh tế, tài chính, dịch vụ của châu Á."
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+let current = 0;
+let score = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const timelineEl = document.getElementById('timeline');
+const qnumEl = document.getElementById('qnum');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const explainEl = document.getElementById('explain');
+const nextBtn = document.getElementById('nextBtn');
+const quizStage = document.getElementById('quizStage');
+const resultStage = document.getElementById('resultStage');
+const resultCard = document.getElementById('resultCard');
+
+function buildTimeline(){
+  timelineEl.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.id = 'dot-' + i;
+    timelineEl.appendChild(d);
+  });
+}
+
+function updateTimeline(){
+  QUESTIONS.forEach((_, i) => {
+    const d = document.getElementById('dot-' + i);
+    d.className = 'dot';
+    if (answers[i] === 'correct') d.classList.add('correct');
+    else if (answers[i] === 'wrong') d.classList.add('wrong');
+    else if (i === current) d.classList.add('current');
+  });
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  qnumEl.textContent = 'Câu ' + (current + 1);
+  questionEl.textContent = item.q;
+  optionsEl.innerHTML = '';
+  explainEl.classList.remove('show');
+  explainEl.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === QUESTIONS.length - 1 ? 'Xem kết quả' : 'Câu tiếp theo';
+
+  item.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span><span>' + opt + '</span>';
+    btn.addEventListener('click', () => selectAnswer(i, btn));
+    optionsEl.appendChild(btn);
+  });
+  updateTimeline();
+}
+
+function selectAnswer(i, btnEl){
+  if (answers[current] !== null) return;
+  const item = QUESTIONS[current];
+  const isCorrect = i === item.correct;
+  answers[current] = isCorrect ? 'correct' : 'wrong';
+  if (isCorrect) score++;
+
+  const optBtns = optionsEl.querySelectorAll('.opt');
+  optBtns.forEach((b, idx) => {
+    b.classList.add('locked');
+    if (idx === item.correct) b.classList.add('correct');
+    if (idx === i && !isCorrect) b.classList.add('incorrect');
+  });
+
+  explainEl.innerHTML = '<b>' + (isCorrect ? 'Chính xác. ' : 'Chưa đúng. ') + '</b>' + item.explain;
+  explainEl.classList.add('show');
+  nextBtn.classList.add('show');
+  updateTimeline();
+}
+
+nextBtn.addEventListener('click', () => {
+  if (current < QUESTIONS.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizStage.classList.add('hidden');
+  resultStage.classList.remove('hidden');
+  resultCard.classList.add('show');
+  document.getElementById('scoreNum').textContent = score + '/' + QUESTIONS.length;
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  document.getElementById('scorePct').textContent = pct + '% câu trả lời đúng';
+
+  let verdict, desc;
+  if (pct >= 90){ verdict = 'Xuất sắc'; desc = 'Bạn nắm rất vững nội dung phần này.'; }
+  else if (pct >= 70){ verdict = 'Khá tốt'; desc = 'Bạn hiểu khá rõ nội dung bài học, chỉ còn vài chi tiết cần ôn lại.'; }
+  else if (pct >= 50){ verdict = 'Trung bình'; desc = 'Bạn đã nắm được nội dung chính, hãy xem lại các mốc quan trọng.'; }
+  else { verdict = 'Cần ôn lại'; desc = 'Hãy xem lại bài giảng phần này trước khi làm lại bài trắc nghiệm.'; }
+  document.getElementById('verdict').textContent = verdict;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0;
+  answers.fill(null);
+  resultStage.classList.add('hidden');
+  quizStage.classList.remove('hidden');
+  resultCard.classList.remove('show');
+  buildTimeline();
+  renderQuestion();
+});
+
+buildTimeline();
+renderQuestion();
+</script>
+</body>
+</html>

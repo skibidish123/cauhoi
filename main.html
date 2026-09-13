@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chủ đề 1 — Lịch sử phát triển Thành phố Hồ Chí Minh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#8B1A2B;
+    --maroon-dark:#4A0E17;
+    --navy:#0F2E4C;
+    --gold:#D9A441;
+    --gold-light:#F0D9A6;
+    --cream:#FBF7F1;
+    --ink:#241315;
+    --muted:#8A7770;
+    --line:#E7DCD2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(1100px 550px at 88% -10%, rgba(139,26,43,0.10), transparent 60%),
+      radial-gradient(900px 550px at -10% 110%, rgba(15,46,76,0.09), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{
+    max-width:1000px;
+    margin:0 auto;
+    padding:4rem 1.5rem 5rem;
+    position:relative;
+    z-index:1;
+  }
+
+  header{margin-bottom:3rem; max-width:640px;}
+  .kicker{
+    display:flex; align-items:center; gap:.6rem;
+    font-size:.8rem; letter-spacing:.04em; color:var(--maroon); font-weight:600;
+    margin-bottom:.7rem;
+  }
+  .kicker .dash{width:22px; height:2px; background:var(--gold); display:inline-block;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(1.9rem, 4.4vw, 2.7rem);
+    line-height:1.15;
+    margin:0 0 .7rem;
+    color:var(--maroon-dark);
+  }
+  .sub{color:var(--muted); font-size:1.02rem; line-height:1.55;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1.4rem;
+  }
+  @media (max-width:820px){
+    .grid{grid-template-columns:1fr;}
+  }
+
+  a.card{
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+    flex-direction:column;
+    border-radius:16px;
+    padding:2rem 1.7rem 1.9rem;
+    min-height:290px;
+    position:relative;
+    overflow:hidden;
+    transition:transform .18s ease, box-shadow .18s ease;
+    box-shadow:0 18px 40px -26px rgba(74,14,23,0.4);
+  }
+  a.card:hover{transform:translateY(-4px);}
+  a.card:focus-visible{outline:3px solid var(--gold); outline-offset:3px;}
+
+  .card.c1{background:#F7F2EE; border:1px solid var(--line);}
+  .card.c2{background:var(--navy); color:#fff;}
+  .card.c3{background:#F7F2EE; border:1px solid var(--line);}
+
+  .num{
+    font-family:'Fraunces',serif; font-weight:700; font-size:2.1rem;
+    color:#D8C3B0;
+  }
+  .card.c2 .num{color:#5C86AC;}
+
+  .ctitle{
+    font-family:'Fraunces',serif; font-weight:600; font-size:1.32rem;
+    line-height:1.28;
+    margin:1.1rem 0 .7rem;
+  }
+  .cdesc{
+    font-size:.93rem; line-height:1.55;
+    color:var(--muted);
+    flex:1;
+  }
+  .card.c2 .cdesc{color:#CBD9E6;}
+
+  .go{
+    margin-top:1.3rem;
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.85rem; font-weight:600;
+    color:var(--maroon);
+  }
+  .card.c2 .go{color:var(--gold);}
+  .go svg{width:14px; height:14px; transition:transform .15s ease;}
+  a.card:hover .go svg{transform:translateX(3px);}
+
+  .badge{
+    position:absolute; top:1.6rem; right:1.6rem;
+    font-size:.72rem; font-weight:600; letter-spacing:.03em;
+    background:var(--gold); color:var(--maroon-dark);
+    padding:.28rem .6rem; border-radius:999px;
+  }
+
+  footer{
+    margin-top:3.5rem;
+    color:var(--muted);
+    font-size:.82rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker"><span class="dash"></span>CHỦ ĐỀ 1 — CẤU TRÚC BÀI HỌC</div>
+    <h1>Lịch sử phát triển của Thành phố Hồ Chí Minh</h1>
+    <p class="sub">Chọn một trong ba nội dung dưới đây để làm bài trắc nghiệm ôn tập (20 câu/phần), dựa trên nội dung bài giảng Giáo dục địa phương lớp 12.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card c1" href="phan1.html">
+      <span class="badge">20 câu</span>
+      <span class="num">I</span>
+      <span class="ctitle">Các giai đoạn phát triển thành phố Hồ Chí Minh</span>
+      <span class="cdesc">Từ Sài Gòn trước năm 1859, thời Pháp thuộc, kháng chiến chống Mỹ, đến giai đoạn 1975–1986 và thời kỳ đổi mới.</span>
+      <span class="go">Bắt đầu làm bài
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="card c2" href="phan2.html">
+      <span class="badge">20 câu</span>
+      <span class="num">II</span>
+      <span class="ctitle">Sự kiện tiêu biểu đối với sự phát triển của thành phố Hồ Chí Minh</span>
+      <span class="cdesc">Nghị quyết 98/2023/QH15: nội dung, thẩm quyền đặc thù và kết quả bước đầu thực hiện.</span>
+      <span class="go">Bắt đầu làm bài
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+
+    <a class="card c3" href="phan3.html">
+      <span class="badge">20 câu</span>
+      <span class="num">III</span>
+      <span class="ctitle">Dự báo xu hướng phát triển đến năm 2030, tầm nhìn đến 2045</span>
+      <span class="cdesc">Mục tiêu tăng trưởng, GRDP, kinh tế số và định hướng vị thế của Thành phố trong khu vực và thế giới.</span>
+      <span class="go">Bắt đầu làm bài
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </span>
+    </a>
+  </div>
+
+  <footer>Giáo dục địa phương · Lớp 12 · Chủ đề 1</footer>
+</div>
+</body>
+</html>
